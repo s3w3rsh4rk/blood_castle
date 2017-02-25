@@ -6,6 +6,7 @@ Rooms are simple containers that has no location of their own.
 """
 from evennia.contrib.extended_room import ExtendedRoom
 from evennia.contrib.rpsystem import ContribRPRoom
+from world.map import Map
 
 
 class Room(ExtendedRoom, ContribRPRoom):
@@ -50,6 +51,15 @@ class Room(ExtendedRoom, ContribRPRoom):
                 # we're over capacity. send them back where they came
                 moved_obj.msg(self.db.errmsg_capacity)
                 moved_obj.move_to(source_location, quiet=True)
+
+    def return_appearance(self, looker):
+        string = "%s\n" % Map(looker).show_map()
+        # Add the room description under the map     
+        #string += "\n{c%s{n\n" % self.get_display_name(looker)
+        # Add all the normal stuff like room description, 
+        # contents, exits etc. 
+        string += "\n" + super(Room, self).return_appearance(looker)
+        return string
 
     # Terrain property, sets self.db.terrain_type, taken from the constats dict
     @property
